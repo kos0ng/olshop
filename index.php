@@ -1,8 +1,4 @@
-<!-- <?php
-session_start();
-include 'koneksi.php';
 
-?> -->
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -54,18 +50,35 @@ include 'koneksi.php';
 <div class="container" style="margin-top: 3%;margin-bottom: 3%">
 
 	<div class="row">
-		 <div class="col-md-4">
+    <?php
+           $data=mysqli_query($koneksi,"select * from produk join kategori on produk.id_kategori=kategori.id_kategori order by produk.id_produk DESC LIMIT 8");
+           $cek= mysqli_num_rows($data);
+           if($cek>0){
+            $list_produk = array();
+              while ($row = mysqli_fetch_assoc($data)) {
+              $list_produk[] = $row;
+               }
+               foreach ($list_produk as $row) {
+            ?>
+     <div class="col-md-4">
           <div class="card" >
-             <a href="/olshop/produk/produk-detail.php">
-             <img src="/olshop/assets/img/produk/1.jpg" class="card-img-top" alt="...">
+             <a href="/olshop/produk/produk-detail.php?id=<?=$row['id_produk']?>">
+             <img src="/olshop/assets/img/produk/<?=$row['gambar']?>" class="card-img-top" alt="...">
          </a>
                 <div class="card-body">
               <p class="card-text text-center">
-              <span style="color: #333;font-size: 90%">Outware</span><br>GIYOMI ID – Naura Tunic Sienna<br><b>Rp 150.000 – Rp 160.000</b>
+              <span style="color: #333;font-size: 90%"><?=$row['nama_kategori']?></span><br><?=$row['nama_produk']?><br><b>Rp <?=number_format($row['harga'])?></b>
               </p>
                 </div>
             </div>
         </div>
+            <?php
+           }
+           }
+           else{
+            echo 'Belum ada Produk';
+           }
+    ?>
 	</div>
 </div>
 

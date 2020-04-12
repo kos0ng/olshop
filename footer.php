@@ -3,8 +3,8 @@
 		<div class="row">
 			<div class="col-md-4"></div>
 			<div class="col-md-4" >
-				<img src="/olshop/assets/img/icon/wa.png" style="width: 100px;margin-top: -8%;margin-left: 15%">
-				<img src="/olshop/assets/img/icon/line.png" style="width: 70px;margin-top: -8%;margin-left: -5%">
+				<img src="/olshop/assets/img/icon/wa.png" style="width: 100px;margin-top: -8%;margin-left: 21%">
+				<img src="/olshop/assets/img/icon/line.png" style="width: 45px;margin-top: -8%;margin-left: -7%">
 				<img src="/olshop/assets/img/icon/ig.png" style="width: 50px;margin-top: -8%">
 			</div>
 			<div class="col-md-4"></div>

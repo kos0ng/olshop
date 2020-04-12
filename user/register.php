@@ -1,8 +1,3 @@
-<!-- <?php
-session_start();
-include 'koneksi.php';
-
-?> -->
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -31,7 +26,7 @@ include 'koneksi.php';
 <div class="container" style="margin-top: 3%;margin-bottom: 3%">
 	 <div class="card">
       <div class="card-body">
-      	<form>
+      	<form method="post" action="">
       		<div class="row">
       			<div class="col-md-6">
       				<div class="row custom-margin">
@@ -39,7 +34,7 @@ include 'koneksi.php';
       						Email
       					</div>
       					<div class="col-md-8">
-      						<input type="text" name="email" class="form-control">
+      						<input type="email" name="email" class="form-control" required>
       					</div>
       				</div>
       				<div class="row custom-margin">
@@ -47,7 +42,7 @@ include 'koneksi.php';
       						Password
       					</div>
       					<div class="col-md-8">
-      						<input type="text" name="password" class="form-control">
+      						<input type="password" name="password" class="form-control" required>
       					</div>
       				</div>
       				<div class="row custom-margin">
@@ -55,15 +50,15 @@ include 'koneksi.php';
       						Confirm Password
       					</div>
       					<div class="col-md-8">
-      						<input type="text" name="email" class="form-control">
+      						<input type="password" name="confirm" class="form-control" required>
       					</div>
       				</div>
       				<div class="row custom-margin">
       					<div class="col-md-3">
-      						Name
+      						Nama
       					</div>
       					<div class="col-md-8">
-      						<input type="text" name="email" class="form-control">
+      						<input type="text" name="nama" class="form-control" required>
       					</div>
       				</div>
       				<div class="row custom-margin">
@@ -71,7 +66,7 @@ include 'koneksi.php';
       						No HP
       					</div>
       					<div class="col-md-8">
-      						<input type="text" name="email" class="form-control">
+      						<input type="text" name="no_hp" class="form-control" required>
       					</div>
       				</div>
       			</div>
@@ -81,15 +76,15 @@ include 'koneksi.php';
       						Provinsi
       					</div>
       					<div class="col-md-8">
-      						<input type="text" name="email" class="form-control">
+      						<input type="text" name="provinsi" class="form-control" required>
       					</div>
       				</div>
       				<div class="row custom-margin">
       					<div class="col-md-3">
-      						City
+      						Kota
       					</div>
       					<div class="col-md-8">
-      						<input type="text" name="password" class="form-control">
+      						<input type="text" name="kota" class="form-control" required>
       					</div>
       				</div>
       				<div class="row custom-margin">
@@ -97,7 +92,7 @@ include 'koneksi.php';
       						Kecamatan
       					</div>
       					<div class="col-md-8">
-      						<input type="text" name="email" class="form-control">
+      						<input type="text" name="kecamatan" class="form-control" required>
       					</div>
       				</div>
       				<div class="row custom-margin">
@@ -105,7 +100,7 @@ include 'koneksi.php';
       						Kode Pos
       					</div>
       					<div class="col-md-8">
-      						<input type="text" name="email" class="form-control">
+      						<input type="number" name="kode_pos" class="form-control" required>
       					</div>
       				</div>
       				<div class="row custom-margin">
@@ -113,14 +108,14 @@ include 'koneksi.php';
       						Alamat
       					</div>
       					<div class="col-md-8">
-      						<textarea class="form-control"></textarea>
+      						<textarea class="form-control" name="alamat" required></textarea>
       					</div>
       				</div>
       			</div>
       			<div class="col-md-4"></div>
       			<div class="col-md-1"></div>
       			<div class="col-md-2" style="margin-top: 2%">
-      				<button type="submit" class="btn btn-black form-control">Daftar</button>
+      				<button type="submit" class="btn btn-black form-control" name="submit">Daftar</button>
       			</div>
       			<div class="col-md-1"></div>
       			<div class="col-md-4"></div>
@@ -139,3 +134,35 @@ include '../footer.php';
   	    <script src="/olshop/assets/js/bootstrap.min.js" type="text/javascript"></script>
   </body>
 </html>
+
+<?php
+if(isset($_POST['submit'])){
+$email=$_POST['email'];
+$password=$_POST['password'];
+$confirm=$_POST['confirm'];
+$nama=$_POST['nama'];
+$no_hp=$_POST['no_hp'];
+$provinsi=$_POST['provinsi'];
+$kota=$_POST['kota'];
+$kecamatan=$_POST['kecamatan'];
+$kode_pos=$_POST['kode_pos'];
+$alamat=$_POST['alamat'];
+
+// cek existing email
+$data = mysqli_query($koneksi,"select * from user where email='$email'");
+
+// menghitung jumlah data yang ditemukan
+$cek = mysqli_num_rows($data);
+
+if($confirm!=$password){
+  echo '<script>alert("Password tidak sama");window.location.replace("register.php"); </script>';
+}
+else if($cek>0){
+echo '<script>alert("Email telah digunakan");window.location.replace("register.php"); </script>';
+}
+else{
+  $result = mysqli_query($koneksi, "INSERT INTO user(nama,email,password,no_hp,provinsi,kota,kecamatan,kode_pos,alamat) VALUES('$nama','$email','$password','$no_hp','$provinsi','$kota','$kecamatan','$kode_pos','$alamat')");
+    echo '<script>alert("Berhasil Mendaftar");window.location.replace("../index.php"); </script>';
+}
+}
+?>

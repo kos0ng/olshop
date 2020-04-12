@@ -7,5 +7,5 @@ session_start();
 
 session_destroy();
 
-header("Location: /olshop/");
+header("Location: /olshop/admin/login.php");
  ?>

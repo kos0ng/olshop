@@ -1,8 +1,4 @@
-<!-- <?php
-session_start();
-include 'koneksi.php';
 
-?> -->
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -34,66 +30,63 @@ include 'koneksi.php';
           <h3>Browse</h3>
           <hr style="width: 30%;float: left;margin-top: 0%">
         </div>
+        <?php
+          $data=mysqli_query($koneksi,"select * from kategori order by nama_kategori ASC");
+          $cek= mysqli_num_rows($data);
+          if($cek>0){
+            $list_kategori = array();
+              while ($row = mysqli_fetch_assoc($data)) {
+              $list_kategori[] = $row;
+               }
+               $id_kategori=$list_kategori[0]['id_kategori'];
+               foreach ($list_kategori as $row) {
+                 ?>
         <div class="col-md-12">
-          <p>Atasan</p>
+          <p><?=$row['nama_kategori']?></p>
           <hr>
         </div>
-        <div class="col-md-12">
-          <p>Bawahan</p>
-          <hr>
-        </div>
-        <div class="col-md-12">
-          <p>Celana</p>
-          <hr>
-        </div>
-        <div class="col-md-12">
-          <p>Denim</p>
-          <hr>
-        </div>
+                 <?php
+               }
+          }
+          else{
+            echo 'Belum ada kategori';
+          }
+        ?>
       </div>
     </div>
     <div class="col-md-10">
       <div class="row">
+
+        <?php
+        if(isset($_GET['id_kategori']) && $_GET['id_kategori']!=''){
+          $id_kategori=$_GET['id_kategori'];
+        }
+          $data=mysqli_query($koneksi,"select * from produk join kategori on produk.id_kategori=kategori.id_kategori where produk.id_kategori='$id_kategori' order by produk.id_kategori ASC ");
+           $cek= mysqli_num_rows($data);
+           if($cek>0){
+            $list_produk = array();
+              while ($row = mysqli_fetch_assoc($data)) {
+              $list_produk[] = $row;
+               }
+               foreach ($list_produk as $row) {
+                 ?>
         <div class="col-md-4">
           <div class="card" >
-             <img src="/olshop/assets/img/produk/1.jpg" class="card-img-top" alt="...">
-                <div class="card-body">
+             <a href="produk-detail.php?id=<?=$row['id_produk']?>"><img src="/olshop/assets/img/produk/<?=$row['gambar']?>" class="card-img-top" alt="..."></a>
+                  <div class="card-body">
               <p class="card-text text-center">
-              <span style="color: #333;font-size: 90%">Outware</span><br>GIYOMI ID – Naura Tunic Sienna<br><b>Rp 150.000 – Rp 160.000</b>
+              <span style="color: #333;font-size: 90%"><?=$row['nama_kategori']?></span><br><?=$row['nama_produk']?><br><b>Rp <?=number_format($row['harga'])?></b>
               </p>
                 </div>
             </div>
         </div>
-         <div class="col-md-4">
-          <div class="card" >
-             <img src="/olshop/assets/img/produk/1.jpg" class="card-img-top" alt="...">
-                <div class="card-body">
-              <p class="card-text text-center">
-              <span style="color: #333;font-size: 90%">Outware</span><br>GIYOMI ID – Naura Tunic Sienna<br><b>Rp 150.000 – Rp 160.000</b>
-              </p>
-                </div>
-            </div>
-        </div>
-         <div class="col-md-4">
-          <div class="card" >
-             <img src="/olshop/assets/img/produk/1.jpg" class="card-img-top" alt="...">
-                <div class="card-body">
-              <p class="card-text text-center">
-              <span style="color: #333;font-size: 90%">Outware</span><br>GIYOMI ID – Naura Tunic Sienna<br><b>Rp 150.000 – Rp 160.000</b>
-              </p>
-                </div>
-            </div>
-        </div>
-         <div class="col-md-4">
-          <div class="card" >
-             <img src="/olshop/assets/img/produk/1.jpg" class="card-img-top" alt="...">
-                <div class="card-body">
-              <p class="card-text text-center">
-              <span style="color: #333;font-size: 90%">Outware</span><br>GIYOMI ID – Naura Tunic Sienna<br><b>Rp 150.000 – Rp 160.000</b>
-              </p>
-                </div>
-            </div>
-        </div>
+                 <?php
+               }
+           }
+           else{
+            echo 'No available products on this category';
+           }
+        ?>
       </div>
     </div>
   </div>

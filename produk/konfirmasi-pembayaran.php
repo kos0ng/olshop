@@ -1,8 +1,3 @@
-<!-- <?php
-session_start();
-include 'koneksi.php';
-
-?> -->
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -34,22 +29,22 @@ include 'koneksi.php';
 
 Silakan isi form di bawah ini lalu submit untuk melakukan konfirmasi pembayaran. 
    </p>
-   <h5>Nomor Order(*)</h5>
-   <form>
-   <input type="number" name="no_order" class="form-control" style="width: 40%">
+   <h5>Nomor Pesanan(*)</h5>
+   <form method="post" action=""  enctype="multipart/form-data">
+   <input type="number" name="id_receipt" class="form-control" style="width: 40%" required>
    <h5 style="margin-top: 2%">Tanggal Pembayaran(*) </h5>
-   <input type="date" name="no_order" class="form-control" style="width: 40%">
+   <input type="date" name="tanggal" class="form-control" style="width: 40%" required>
    <h5 style="margin-top: 2%">Nama Pembayar(*) </h5>
-   <input type="text" name="no_order" class="form-control" style="width: 40%">
+   <input type="text" name="nama_pembayar" class="form-control" style="width: 40%" required>
    <h5 style="margin-top: 2%"> Nama Bank(*) </h5>
-   <input type="text" name="no_order" class="form-control" style="width: 40%">
+   <input type="text" name="bank" class="form-control" style="width: 40%" required>
    <h5 style="margin-top: 2%"> Transfer Amount(*) </h5>
-   <input type="number" name="no_order" class="form-control" style="width: 40%">
+   <input type="number" name="total_pembayaran" class="form-control" style="width: 40%" required>
    <h5 style="margin-top: 2%"> Catatan </h5>
-   <textarea name="no_order" class="form-control" style="width: 40%"></textarea>
+   <textarea name="catatan" class="form-control" style="width: 40%"></textarea>
    <h5 style="margin-top: 2%">Bukti Transfer(*)</h5>
-   <input type="file" name="no_order" class="form-control" style="width: 20%">
-   <button type="submit" class="btn btn-black" style="margin-top:5%;width: 10%">Submit</button>
+   <input type="file" name="file" class="form-control" style="width: 20%">
+   <button type="submit" class="btn btn-black" style="margin-top:5%;width: 10%" name="submit">Submit</button>
   </form>
 </div>
 
@@ -61,3 +56,40 @@ include '../footer.php';
   	    <script src="/olshop/assets/js/bootstrap.min.js" type="text/javascript"></script>
   </body>
 </html>
+<?php
+if(isset($_POST['submit'])){
+  $id_receipt=$_POST['id_receipt'];
+  $data=mysqli_query($koneksi,"SELECT * from pesanan where id_receipt='$id_receipt'");
+  $cek=mysqli_num_rows($data);
+  if($cek==0){
+    echo '<script>alert("Nomor Pesanan tidak diketahui");window.location.replace("konfirmasi-pembayaran.php"); </script>';
+  }
+  $tanggal=$_POST['tanggal'];
+  $nama_pembayar=$_POST['nama_pembayar'];
+  $bank=$_POST['bank'];
+  $total_pembayaran=$_POST['total_pembayaran'];
+  $catatan=$_POST['catatan'];
+  $ekstensi_boleh = array('png','jpg','jpeg');
+  $nama = $_FILES['file']['name'];
+  $x = explode('.', $nama);
+  $ekstensi = strtolower(end($x));
+  echo $ekstensi;
+  $size = $_FILES['file']['size'];
+  $file_tmp = $_FILES['file']['tmp_name'];  
+    if(in_array($ekstensi, $ekstensi_boleh) === true){
+        if($size < 1044070){      
+      move_uploaded_file($file_tmp, '../assets/img/bukti/'.$nama);
+      $result = mysqli_query($koneksi, "INSERT INTO pembayaran(id_receipt,tanggal,nama_pembayar,bank,total_pembayaran,catatan,bukti_transfer) VALUES('$id_receipt','$tanggal','$nama_pembayar','$bank','$total_pembayaran','$catatan','$nama')");
+      if($result){
+            echo '<script>alert("Berhasil Mengirim Bukti Pembayaran");window.location.replace("konfirmasi-pembayaran.php"); </script>';
+      }else{
+            echo '<script>alert("Gagal Mengirim Bukti Pembayaran");window.location.replace("konfirmasi-pembayaran.php"); </script>';
+      }
+        }else{
+         echo '<script>alert("Ukuran Gambar Terlalu Besar");window.location.replace("konfirmasi-pembayaran.php"); </script>';
+        }
+         }else{
+       echo '<script>alert("Ekstensi tidak diperbolehkan");window.location.replace("konfirmasi-pembayaran.php"); </script>';
+         }
+}
+?>

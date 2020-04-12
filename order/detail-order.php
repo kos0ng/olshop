@@ -23,23 +23,21 @@
 
 
 	<h2 class="text-center custom-font" style="margin-top: 3%;font-size:150%">
-<b>1. Keranjang belanja > </b>
-2. Detail pembayaran 
+1. Keranjang belanja >
+<b>2. Detail pembayaran</b>
     <hr style="width: 60%"></h2>
 <div class="container" style="margin-top: 3%;margin-bottom: 3%;padding-left: 5%;margin-bottom: 10%">
 <?php
-if(!isset($_SESSION['id_user'])){
-  echo '<p class="text-center">
-  Silahkan login terlebih dahulu
-  </p>';
+if(!isset($_GET['id']) || $_GET['id']==''){
+  header("Location: index.php");
 }
 else{
-
-$id_user=$_SESSION['id_user'];
- $data=mysqli_query($koneksi,"select * from pesanan join produk on pesanan.id_produk=produk.id_produk where status_cart=0 and id_user='$id_user'");
+  $id_receipt=$_GET['id'];
+  $data=mysqli_query($koneksi,"select * from pesanan join produk on pesanan.id_produk=produk.id_produk where id_receipt='$id_receipt'");
   $cek= mysqli_num_rows($data);
   if($cek>0){
 ?>
+<h4 style="text-align: center">Nomor Pesanan : #<?=$id_receipt?></h4><br>
 <table class="table">
   <thead>
     <th>No.</th>
@@ -48,19 +46,16 @@ $id_user=$_SESSION['id_user'];
     <th>Jumlah</th>
     <th>Harga</th>
     <th>Sub Total</th>
-    <th>Action</th>
   </thead>
   <tbody>
     <?php
     $list_pesanan = array();
-    $list_id_order=array();
     while ($row = mysqli_fetch_assoc($data)) {
     $list_pesanan[] = $row;
     }
     $i=1;
     $sum=0;
     foreach ($list_pesanan as $row) {
-      array_push($list_id_order, $row['id_pesanan']);
       ?>
       <tr>
       <td><?=$i?></td>
@@ -68,13 +63,10 @@ $id_user=$_SESSION['id_user'];
       <td><?=$row['ukuran_pesanan']?></td>
       <td><?=$row['jumlah']?></td>
       <td><?=$row['harga']?></td>
-      <td><?=$row['jumlah']*$row['harga']?></td>
-      <td>
-       <a href="delete-order.php?id=<?=$row['id_pesanan']?>"> <button class="btn btn-danger">Hapus</button> </a>
-      </td>
+      <td><?=$row['total_harga']?></td>
     </tr>
       <?php
-    $sum+=$row['jumlah']*$row['harga'];
+    $sum+=$row['total_harga'];
     $i++;
     }
     ?>
@@ -90,25 +82,32 @@ $id_user=$_SESSION['id_user'];
   </tbody>
 </table>
 <div class="row">
-
-  <div class="col-md-4"></div>
-  <div class="col-md-4">
-    <form method="post" action="">
-    <button type="submit" class="btn btn-success form-control" name="submitCheckout">Checkout</button>
-    </form>
+<div class="col-md-3"></div>
+<div class="col-md-6">
+  <div class="card">
+  <div class="card-header bg-success text-center" style="color:white">
+    Payment Information
   </div>
-    <div class="col-md-4"></div>
+  <div class="card-body">
+    <h5 class="card-title">Mandiri 123123123123123 a.n coba1</h5>
+    <h5 class="card-title">BRI 123123123123123 a.n coba2</h5>
+    <h5 class="card-title">BCA 123123123123123 a.n coba3</h5><br>
+    <p class="card-text">Silahkan melakukan transfer ke rekening diatas dengan total pembayaran Rp<?=number_format($sum+$id_receipt)?>,00 (Total Harga+Kode Pembayaran)</p>
+  </div>
+</div>
+</div>
+<div class="col-md-3"></div>
+  
 </div>
 <?php
   }
   else{
     ?>
 <p class="text-center">
-  Keranjang Anda masih kosong.
+  Receipt Not Found;
   </p>
     <?php
   }
-
 }
 ?>
   <div class="row">
@@ -128,15 +127,3 @@ include '../footer.php';
   	    <script src="/olshop/assets/js/bootstrap.min.js" type="text/javascript"></script>
   </body>
 </html>
-
-<?php
-if(isset($_POST['submitCheckout'])){
-  $data=mysqli_query($koneksi,"select max(id_receipt) as max_id from pesanan");
-  $receipt = mysqli_fetch_array($data);
-  $id_receipt= $receipt['max_id']+1;
-  foreach ($list_id_order as $row) {
-    $data = mysqli_query($koneksi,"UPDATE pesanan SET status_cart=1,id_receipt='$id_receipt' WHERE id_pesanan='$row'");
-  }
-  echo '<script>alert("Berhasil Melakukan Checkout!");window.location.replace("detail-order.php?id='.$id_receipt.'"); </script>';
-}
-?>

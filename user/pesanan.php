@@ -1,8 +1,3 @@
-<!-- <?php
-session_start();
-include 'koneksi.php';
-
-?> -->
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -39,24 +34,24 @@ include 'koneksi.php';
                 <img src="/olshop/assets/img/user/default.png" class="rounded-circle">
               </div>
               <div class="col-md-6">
-                <h5 style="margin-top: 20%;margin-left: 15%">Username</h5>
+                <h5 style="margin-top: 20%;margin-left: 15%"> <?=$_SESSION['nama'];?></h5>
               </div>
             </div>
           </div>
           <div class="col-md-12" style="margin-top: 8%">
-           <a href="/olshop/user/" class="custom-font"> Dasbor</a>
+           <a href="index.php" class="custom-font"> Dasbor</a>
           </div> 
           <hr style="width: 100%">
            <div class="col-md-12">
-           <a href="/olshop/user/pesanan.php" class="custom-font">  Pesanan</a>
+           <a href="pesanan.php" class="custom-font">  Pesanan</a>
           </div> 
           <hr style="width: 100%">
             <div class="col-md-12">
-           <a href="/olshop/user/detail-akun.php" class="custom-font">  Detail Akun</a>
+           <a href="detail-akun.php" class="custom-font">  Detail Akun</a>
           </div> 
           <hr style="width: 100%">
             <div class="col-md-12">
-          <a href="/olshop/user/logout.php" class="custom-font">   Keluar</a>
+          <a href="logout.php" class="custom-font">   Keluar</a>
           </div> 
           <hr style="width: 100%">
           </div>
@@ -65,10 +60,22 @@ include 'koneksi.php';
       <div class="vl"></div>
     </div>
     <div class="col-md-8">
+      <?php
+      $id_user=$_SESSION['id_user'];
+      $data = mysqli_query($koneksi,"select * from pesanan where id_user='$id_user' and status_cart=1");
+      $cek = mysqli_num_rows($data);
+      if($cek>0){
+echo 'produk';
+      }
+      else{
+        ?>
       <p>No order has been made yet. 
       </p>
       <a href="/olshop/produk/"><button type="button" class="btn btn-black">Browse Products</button></a>
-      
+        <?php
+      }
+      ?>
+
     </div>
   </div>
 </div>
