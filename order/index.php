@@ -67,8 +67,8 @@ $id_user=$_SESSION['id_user'];
       <td><?=$row['nama_produk']?></td>
       <td><?=$row['ukuran_pesanan']?></td>
       <td><?=$row['jumlah']?></td>
-      <td><?=$row['harga']?></td>
-      <td><?=$row['jumlah']*$row['harga']?></td>
+      <td>Rp<?=number_format($row['harga'])?></td>
+      <td>Rp<?=number_format($row['jumlah']*$row['harga'])?></td>
       <td>
        <a href="delete-order.php?id=<?=$row['id_pesanan']?>"> <button class="btn btn-danger">Hapus</button> </a>
       </td>
@@ -84,7 +84,7 @@ $id_user=$_SESSION['id_user'];
       <td></td>
       <td></td>
       <td><b>Total Harga</b></td>
-      <td><?=$sum?></td>
+      <td>Rp<?=number_format($sum)?></td>
       <td></td>
     </tr>
   </tbody>

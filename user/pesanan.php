@@ -62,16 +62,214 @@
     <div class="col-md-8">
       <?php
       $id_user=$_SESSION['id_user'];
-      $data = mysqli_query($koneksi,"select * from pesanan where id_user='$id_user' and status_cart=1");
+      $data=mysqli_query($koneksi,"SELECT DISTINCT id_receipt,status_pesanan from pesanan where status_cart=1 and id_user='$id_user'");
       $cek = mysqli_num_rows($data);
       if($cek>0){
-echo 'produk';
+        $list_receipt = array();
+        while ($row = mysqli_fetch_assoc($data)) {
+             $list_receipt[] = $row;
+        }
+        ?> 
+        <h4 class="text-center">List Pesanan Proses</h4><br>
+        <table class="table">
+          <th>No.</th>
+          <th>ID Receipt</th>
+          <th>Bukti Transfer</th>
+          <th>Detail Pesanan</th>
+          <th>Status</th>
+          <?php
+          $i=1;
+            foreach ($list_receipt as $row) {
+              ?>
+              <tr>
+                <td>
+                  <?=$i;?>
+                </td>
+                <td>
+                  <?=$row['id_receipt']?>
+                </td>
+                <td>
+                  <?php
+                  $id_receipt=$row['id_receipt'];
+                  $data=mysqli_query($koneksi,"SELECT * from pembayaran where id_receipt='$id_receipt'");
+                  $cek=mysqli_num_rows($data);
+                  if($cek>0){
+                    $bukti_data = mysqli_fetch_array($data);
+                    ?>
+
+<!-- Button trigger modal -->
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#buktiTransfer<?=$i?>">
+ Lihat
+</button>
+
+<!-- Modal -->
+<div class="modal fade" id="buktiTransfer<?=$i?>" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Bukti Transfer</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+       <div class="row">
+         <div class="col-md-3">
+           Tanggal
+         </div>
+         <div class="col-md-1">:</div>
+         <div class="col-md-8">
+           <?=$bukti_data['tanggal']?>
+         </div><hr style="width: 90%">
+          <div class="col-md-3">
+           Nama Pembayar
+         </div>
+         <div class="col-md-1">:</div>
+         <div class="col-md-8">
+           <?=$bukti_data['nama_pembayar']?>
+         </div><hr style="width: 90%">
+          <div class="col-md-3">
+           Total Pembayaran
+         </div>
+         <div class="col-md-1">:</div>
+         <div class="col-md-8">
+           <?=$bukti_data['total_pembayaran']?>
+         </div><hr style="width: 90%">
+          <div class="col-md-3">
+           Nama Bank
+         </div>
+         <div class="col-md-1">:</div>
+         <div class="col-md-8">
+           <?=$bukti_data['bank']?>
+         </div><hr style="width: 90%">
+          <div class="col-md-3">
+           Catatan
+         </div>
+         <div class="col-md-1">:</div>
+         <div class="col-md-8">
+           <textarea disabled>
+             <?=$bukti_data['catatan']?>
+           </textarea>
+         </div><hr style="width: 90%">
+          <div class="col-md-3">
+           Bukti Pembayaran
+         </div>
+         <div class="col-md-1">:</div>
+         <div class="col-md-8">
+           <img src="../assets/img/bukti/<?=$bukti_data['bukti_transfer']?>" class="img-thumbnail">
+         </div>
+       </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+                    <?
+                  }
+                  else{
+                    echo 'Not Uploaded Yet';
+                  }
+                  ?>
+                </td>
+                <td>
+                  <!-- Button trigger modal -->
+<button type="button" class="btn btn-warning" data-toggle="modal" data-target="#detailReceipt<?=$i?>">
+  Lihat
+</button>
+
+<!-- Modal -->
+<div class="modal fade" id="detailReceipt<?=$i?>" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content"  style="width: 150%;margin-left: -25%;margin-top: 15%">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">List Pesanan</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <?php
+               $data = mysqli_query($koneksi,"SELECT * FROM pesanan JOIN produk ON pesanan.id_produk = produk.id_produk where id_receipt='$id_receipt'");
+              $list_pesanan = array();
+              while ($row2 = mysqli_fetch_assoc($data)) {
+              $list_pesanan[] = $row2;
+            }
+        ?>
+        <table class="table">
+          <thead class="thead-dark">
+            <th>No.</th>
+            <th>Nama Produk</th>
+            <th>Ukuran</th>
+            <th>Jumlah</th>
+            <th>Harga</th>
+            <th>Sub Total</th>
+          </thead>
+          <tbody>
+            <?php
+            $j=1;
+            $sum=0;
+            foreach ($list_pesanan as $row2) {
+              ?>
+              <tr>
+                <td><?=$j?></td>
+                <td><?=$row2['nama_produk']?></td>
+                <td><?=$row2['ukuran_pesanan']?></td>
+                <td><?=$row2['jumlah']?></td>
+                <td><?=$row2['harga']?></td>
+                <td><?=$row2['total_harga']?></td>
+              </tr>
+              <?php
+            $sum+=$row2['total_harga'];
+            $j++;
+            }
+            ?>
+            <tr>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td><b>Total Pembayaran</b></td>
+              <td><?=$sum?></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+                </td>
+                <td>
+                  <?php
+
+                  if($row['status_pesanan']==1){
+                    echo 'Selesai';
+                  }
+                  else{
+                    echo 'Proses';
+                  }
+                  ?>
+                </td>
+              </tr>
+              <?php
+            $i++;
+            }
+
+          ?>
+        </table>
+
+        <?php
       }
       else{
         ?>
-      <p>No order has been made yet. 
+      <p>No order has been finished yet. 
       </p>
-      <a href="/olshop/produk/"><button type="button" class="btn btn-black">Browse Products</button></a>
         <?php
       }
       ?>

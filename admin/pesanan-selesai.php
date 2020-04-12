@@ -66,9 +66,9 @@
       $data=mysqli_query($koneksi,"SELECT DISTINCT id_receipt from pesanan where status_cart=1 and status_pesanan=1");
       $cek = mysqli_num_rows($data);
       if($cek>0){
-        $list_pesanan = array();
+        $list_receipt = array();
         while ($row = mysqli_fetch_assoc($data)) {
-             $list_pesanan[] = $row;
+             $list_receipt[] = $row;
         }
         ?> 
         <h4 class="text-center">List Pesanan Proses</h4><br>
@@ -80,7 +80,7 @@
           <th>Action</th>
           <?php
           $i=1;
-            foreach ($list_pesanan as $row) {
+            foreach ($list_receipt as $row) {
               ?>
               <tr>
                 <td>
@@ -194,12 +194,14 @@
       </div>
       <div class="modal-body">
         <?php
-               $data = mysqli_query($koneksi,"SELECT * FROM pesanan JOIN produk ON pesanan.id_produk = produk.id_produk");
+               $data = mysqli_query($koneksi,"SELECT * FROM pesanan JOIN produk ON pesanan.id_produk = produk.id_produk JOIN user on pesanan.id_user=user.id_user where id_receipt='$id_receipt'");
               $list_pesanan = array();
-              while ($row = mysqli_fetch_assoc($data)) {
-              $list_pesanan[] = $row;
+              while ($row2 = mysqli_fetch_assoc($data)) {
+              $list_pesanan[] = $row2;
             }
+            $nama_pemesan=$list_pesanan[0]['nama'];
         ?>
+        <h4>Nama pemesan : <span style="color:red"> <?=$nama_pemesan?></span></h4><br>
         <table class="table">
           <thead class="thead-dark">
             <th>No.</th>

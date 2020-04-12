@@ -62,8 +62,8 @@ else{
       <td><?=$row['nama_produk']?></td>
       <td><?=$row['ukuran_pesanan']?></td>
       <td><?=$row['jumlah']?></td>
-      <td><?=$row['harga']?></td>
-      <td><?=$row['total_harga']?></td>
+      <td>Rp<?=number_format($row['harga'])?></td>
+      <td>Rp<?=number_format($row['total_harga'])?></td>
     </tr>
       <?php
     $sum+=$row['total_harga'];
@@ -76,7 +76,7 @@ else{
       <td></td>
       <td></td>
       <td><b>Total Harga</b></td>
-      <td><?=$sum?></td>
+      <td>Rp<?=number_format($sum)?></td>
       <td></td>
     </tr>
   </tbody>

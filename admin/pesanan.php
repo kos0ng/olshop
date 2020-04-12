@@ -66,9 +66,9 @@
       $data=mysqli_query($koneksi,"SELECT DISTINCT id_receipt from pesanan where status_cart=1 and status_pesanan=0");
       $cek = mysqli_num_rows($data);
       if($cek>0){
-        $list_pesanan = array();
+        $list_receipt = array();
         while ($row = mysqli_fetch_assoc($data)) {
-             $list_pesanan[] = $row;
+             $list_receipt[] = $row;
         }
         ?> 
         <h4 class="text-center">List Pesanan Proses</h4><br>
@@ -80,7 +80,7 @@
           <th>Action</th>
           <?php
           $i=1;
-            foreach ($list_pesanan as $row) {
+            foreach ($list_receipt as $row) {
               ?>
               <tr>
                        <td>
@@ -187,19 +187,23 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content"  style="width: 150%;margin-left: -25%;margin-top: 15%">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">List Pesanan</h5>
+        <h5 class="modal-title" id="exampleModalLabel" style="margin-left: 40%">
+        List Pesanan
+      </h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
         <?php
-               $data = mysqli_query($koneksi,"SELECT * FROM pesanan JOIN produk ON pesanan.id_produk = produk.id_produk");
+               $data = mysqli_query($koneksi,"SELECT * FROM pesanan JOIN produk ON pesanan.id_produk = produk.id_produk JOIN user on pesanan.id_user=user.id_user where id_receipt='$id_receipt'");
               $list_pesanan = array();
-              while ($row = mysqli_fetch_assoc($data)) {
-              $list_pesanan[] = $row;
+              while ($row2 = mysqli_fetch_assoc($data)) {
+              $list_pesanan[] = $row2;
             }
+            $nama_pemesan=$list_pesanan[0]['nama'];
         ?>
+        <h4>Nama pemesan : <span style="color:red"> <?=$nama_pemesan?></span></h4><br>
         <table class="table">
           <thead class="thead-dark">
             <th>No.</th>
@@ -296,7 +300,17 @@ if(isset($_POST['submit_opsi'])){
     echo '<script>alert("Berhasil update!");window.location.replace("pesanan.php"); </script>';
   }
   else if($opsi=='hapus'){
-    mysqli_query($koneksi,"DELETE FROM pesanan WHERE id_receipt='$id_receipt'");
+    $data=mysqli_query($koneksi,"SELECT id_produk,jumlah,stok from pesanan join produk on pesanan.id_produk=produk.id_produk where id_receipt='$id_receipt'");
+    $list_produk = array();
+    while ($row = mysqli_fetch_assoc($data)) {
+    $list_produk[] = $row;
+    }
+    foreach ($list_produk as $row) {
+      $avail_stok=$row['stok']+$row['jumlah'];
+      $id_produk=$row['id_produk'];
+      mysqli_query($koneksi,"UPDATE produk set stok='$avail_stok' where id_produk='$id_produk'");  
+    }
+    mysqli_query($koneksi,"DELETE FROM pesanan WHERE id_receipt='$id_receipt'");  
     echo '<script>alert("Berhasil menghapus!");window.location.replace("pesanan.php"); </script>';
   }
 }

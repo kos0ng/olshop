@@ -27,6 +27,7 @@ if(!isset($_GET['id']) || $_GET['id']==''){
   $id_produk=$_GET['id'];
   $data=mysqli_query($koneksi,"select * from produk join kategori on produk.id_kategori=kategori.id_kategori where id_produk='$id_produk'");
    $cek= mysqli_num_rows($data);
+   $avail_stok=0;
    if($cek>0){
 $produk_data = mysqli_fetch_array($data);
 $ukuran=explode(',', $produk_data['ukuran']);
@@ -71,7 +72,18 @@ $ukuran=explode(',', $produk_data['ukuran']);
     <div class="col-md-6" style="padding: 3%">
       <a href="#" style="color:grey">Beranda / <?=$produk_data['nama_kategori']?></a>
       <h3> <?=$produk_data['nama_produk']?></h3><hr>
-      <h4>Rp <?=number_format($produk_data['harga'])?></h4><br>
+      <h4>Rp <?=number_format($produk_data['harga'])?></h4>
+      <h5>Sisa Stok : 
+        <?php
+        $tmp=$produk_data['stok'];
+        if($tmp==0){
+          echo 'Kosong';
+        }
+        else{
+          echo $tmp;
+        }
+        ?>
+      </h5><br>
       <form method="post" action="">
         <input type="hidden" name="id_produk" value="<?=$produk_data['id_produk']?>">
       <div class="row">
@@ -82,6 +94,7 @@ $ukuran=explode(',', $produk_data['ukuran']);
       
       <select class="form-control" name="ukuran">
         <?php
+        $avail_stok+=$produk_data['stok'];
         foreach ($ukuran as $row) {
           ?>
 <option value="<?=$row?>"><?=$row?></option>
@@ -92,15 +105,18 @@ $ukuran=explode(',', $produk_data['ukuran']);
         </div>
       </div>
       <div class="row" style="margin-top: 5%">
-              <div class="col-md-3" style="">
-            <input type="number" name="jumlah" class="form-control" required>
+              <div class="col-md-3">
+                Jumlah
+              </div>
+              <div class="col-md-3" >
+           <input type="number" name="jumlah" class="form-control" required>
         </div>
         <div class="col-md-3">
           <?php
           if(!isset($_SESSION['id_user'])){
             ?>
 <a href="../"><button type="button" class="btn btn-warning form-control" name="submit">Login</button></a>
-            <?
+            <?php
           }
           else{
             ?>
@@ -184,8 +200,16 @@ $status_cart=0;
 $status_pesanan=0;
 $jumlah=$_POST['jumlah'];
 $ukuran=$_POST['ukuran'];
+if($jumlah>$avail_stok){
+  echo '<script>alert("Stok tidak mencukupi");window.location.replace(); </script>';
+}
+else{
+  $avail_stok-=$jumlah;
+
 $total_harga=$_POST['jumlah']*$produk_data['harga'];
 $result = mysqli_query($koneksi, "INSERT INTO pesanan(id_produk,id_user,status_cart,status_pesanan,jumlah,ukuran_pesanan,total_harga) VALUES('$id_produk','$id_user','$status_cart','$status_pesanan','$jumlah','$ukuran','$total_harga')");
-    echo '<script>alert("Berhasil Menambah ke Keranjang");window.location.replace("index.php"); </script>';
+$result2 = mysqli_query($koneksi,"UPDATE produk set stok='$avail_stok' where id_produk='$id_produk'");
+    echo '<script>alert("Berhasil Menambah ke Keranjang");window.location.replace("../order/"); </script>';
+}
 }
 ?>
